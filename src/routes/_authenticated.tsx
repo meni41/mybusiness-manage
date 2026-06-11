@@ -32,7 +32,7 @@ function AuthedLayout() {
           <header className="sticky top-0 z-20 flex h-14 items-center gap-3 border-b border-border bg-background/80 px-4 backdrop-blur">
             <SidebarTrigger />
             <div className="h-5 w-px bg-border" />
-            <span className="text-sm font-medium text-muted-foreground">Workspace</span>
+            <span className="text-sm font-medium text-muted-foreground">סביבת עבודה</span>
           </header>
           <main className="flex-1 p-4 sm:p-6 lg:p-8">
             <Outlet />

@@ -8,7 +8,7 @@ import { format, isToday, isPast, parseISO } from "date-fns";
 import { statusLabel } from "@/lib/db-types";
 
 export const Route = createFileRoute("/_authenticated/")({
-  head: () => ({ meta: [{ title: "Dashboard — Atlas" }] }),
+  head: () => ({ meta: [{ title: "לוח בקרה — אטלס" }] }),
   component: Dashboard,
 });
 
@@ -47,17 +47,17 @@ function Dashboard() {
     .slice(0, 8);
 
   const stats = [
-    { label: "Active clients", value: activeClients, icon: Users, tint: "text-info" },
-    { label: "Pending tasks", value: pendingTasks, icon: CheckSquare, tint: "text-warning" },
-    { label: "Completed tasks", value: completedTasks, icon: CheckSquare, tint: "text-success" },
-    { label: "Projects / folders", value: folders.length, icon: FolderOpen, tint: "text-primary" },
+    { label: "לקוחות פעילים", value: activeClients, icon: Users, tint: "text-info" },
+    { label: "משימות פתוחות", value: pendingTasks, icon: CheckSquare, tint: "text-warning" },
+    { label: "משימות שהושלמו", value: completedTasks, icon: CheckSquare, tint: "text-success" },
+    { label: "פרויקטים / תיקיות", value: folders.length, icon: FolderOpen, tint: "text-primary" },
   ];
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-semibold tracking-tight">Dashboard</h1>
-        <p className="text-sm text-muted-foreground">Today at a glance.</p>
+        <h1 className="text-3xl font-semibold tracking-tight">לוח בקרה</h1>
+        <p className="text-sm text-muted-foreground">מבט מהיר על היום.</p>
       </div>
 
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
@@ -80,12 +80,12 @@ function Dashboard() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
             <AlertCircle className="h-4 w-4 text-warning" />
-            Urgent today
+            דחוף להיום
           </CardTitle>
         </CardHeader>
         <CardContent>
           {urgent.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Nothing urgent. Nice work.</p>
+            <p className="text-sm text-muted-foreground">אין משימות דחופות. כל הכבוד!</p>
           ) : (
             <ul className="divide-y divide-border">
               {urgent.map((t) => (
@@ -95,7 +95,7 @@ function Dashboard() {
                     {t.due_date && (
                       <p className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
                         <Calendar className="h-3 w-3" />
-                        {format(parseISO(t.due_date), "MMM d, yyyy")}
+                        {format(parseISO(t.due_date), "d MMM yyyy")}
                       </p>
                     )}
                   </div>
@@ -109,7 +109,7 @@ function Dashboard() {
           )}
           <div className="mt-4">
             <Link to="/tasks" className="text-sm font-medium text-primary hover:underline">
-              View all tasks →
+              לצפייה בכל המשימות ←
             </Link>
           </div>
         </CardContent>

@@ -12,14 +12,14 @@ import { Briefcase } from "lucide-react";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
-    meta: [{ title: "Sign in — Atlas" }],
+    meta: [{ title: "התחברות — אטלס" }],
   }),
   component: AuthPage,
 });
 
 const schema = z.object({
-  email: z.string().trim().email("Enter a valid email").max(255),
-  password: z.string().min(6, "Min 6 characters").max(72),
+  email: z.string().trim().email("יש להזין כתובת דוא\"ל תקינה").max(255),
+  password: z.string().min(6, "לפחות 6 תווים").max(72),
 });
 
 function AuthPage() {
@@ -50,14 +50,14 @@ function AuthPage() {
           options: { emailRedirectTo: `${window.location.origin}/` },
         });
         if (error) throw error;
-        toast.success("Account created — you're in!");
+        toast.success("החשבון נוצר — ברוכים הבאים!");
       } else {
         const { error } = await supabase.auth.signInWithPassword(parsed.data);
         if (error) throw error;
-        toast.success("Welcome back");
+        toast.success("ברוכים השבים");
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Authentication failed");
+      toast.error(err instanceof Error ? err.message : "ההתחברות נכשלה");
     } finally {
       setBusy(false);
     }
@@ -72,28 +72,28 @@ function AuthPage() {
             <Briefcase className="h-6 w-6" />
           </div>
           <CardTitle className="text-2xl">
-            {mode === "signin" ? "Welcome back" : "Create your workspace"}
+            {mode === "signin" ? "ברוכים השבים" : "יצירת סביבת עבודה"}
           </CardTitle>
           <CardDescription>
-            Manage clients, projects, and tasks — all in one place.
+            ניהול לקוחות, פרויקטים ומשימות — הכל במקום אחד.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={submit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">דוא"ל</Label>
               <Input
                 id="email"
                 type="email"
                 autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@company.com"
+                placeholder="name@company.com"
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">סיסמה</Label>
               <Input
                 id="password"
                 type="password"
@@ -105,17 +105,17 @@ function AuthPage() {
               />
             </div>
             <Button type="submit" className="w-full" disabled={busy}>
-              {busy ? "Please wait…" : mode === "signin" ? "Sign in" : "Create account"}
+              {busy ? "אנא המתינו…" : mode === "signin" ? "התחברות" : "יצירת חשבון"}
             </Button>
           </form>
           <p className="mt-4 text-center text-sm text-muted-foreground">
-            {mode === "signin" ? "New here?" : "Already have an account?"}{" "}
+            {mode === "signin" ? "חדשים כאן?" : "כבר יש לכם חשבון?"}{" "}
             <button
               type="button"
               onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
               className="font-medium text-primary hover:underline"
             >
-              {mode === "signin" ? "Create an account" : "Sign in"}
+              {mode === "signin" ? "יצירת חשבון" : "התחברות"}
             </button>
           </p>
         </CardContent>

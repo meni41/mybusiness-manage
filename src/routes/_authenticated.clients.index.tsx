@@ -29,7 +29,7 @@ import { ClientFormDialog } from "@/components/client-form-dialog";
 import { CLIENT_STATUSES, statusLabel, type Client } from "@/lib/db-types";
 
 export const Route = createFileRoute("/_authenticated/clients/")({
-  head: () => ({ meta: [{ title: "Clients — Atlas" }] }),
+  head: () => ({ meta: [{ title: "לקוחות — אטלס" }] }),
   component: ClientsPage,
 });
 
@@ -76,36 +76,36 @@ function ClientsPage() {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Client deleted");
+      toast.success("הלקוח נמחק");
       qc.invalidateQueries({ queryKey: ["clients"] });
       qc.invalidateQueries({ queryKey: ["dashboard"] });
       setToDelete(null);
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : "Failed"),
+    onError: (e) => toast.error(e instanceof Error ? e.message : "הפעולה נכשלה"),
   });
 
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight">Clients</h1>
+          <h1 className="text-3xl font-semibold tracking-tight">לקוחות</h1>
           <p className="text-sm text-muted-foreground">
-            {filtered.length} of {clients.length}
+            {filtered.length} מתוך {clients.length}
           </p>
         </div>
         <Button onClick={() => setDialog({ open: true, client: null })}>
-          <Plus className="mr-2 h-4 w-4" /> New client
+          <Plus className="ms-2 h-4 w-4" /> לקוח חדש
         </Button>
       </div>
 
       <div className="flex flex-wrap gap-3">
         <div className="relative min-w-[240px] flex-1">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="pointer-events-none absolute end-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search name, email, company…"
-            className="pl-9"
+            placeholder="חיפוש לפי שם, דוא&quot;ל, חברה…"
+            className="pe-9"
           />
         </div>
         <Select value={status} onValueChange={setStatus}>
@@ -113,7 +113,7 @@ function ClientsPage() {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All statuses</SelectItem>
+            <SelectItem value="all">כל הסטטוסים</SelectItem>
             {CLIENT_STATUSES.map((s) => (
               <SelectItem key={s} value={s}>
                 {statusLabel[s]}
@@ -124,11 +124,11 @@ function ClientsPage() {
       </div>
 
       {isLoading ? (
-        <p className="text-sm text-muted-foreground">Loading…</p>
+        <p className="text-sm text-muted-foreground">טוען…</p>
       ) : filtered.length === 0 ? (
         <Card className="p-10 text-center">
           <p className="text-sm text-muted-foreground">
-            {clients.length === 0 ? "No clients yet. Add your first one." : "No matches."}
+            {clients.length === 0 ? "אין לקוחות עדיין. הוסיפו את הראשון." : "לא נמצאו תוצאות."}
           </p>
         </Card>
       ) : (
@@ -142,7 +142,7 @@ function ClientsPage() {
                 to="/clients/$id"
                 params={{ id: c.id }}
                 className="absolute inset-0"
-                aria-label={`Open ${c.name}`}
+                aria-label={`פתיחת ${c.name}`}
               />
               <div className="relative flex items-start justify-between gap-2">
                 <div className="min-w-0">
@@ -205,15 +205,15 @@ function ClientsPage() {
       <AlertDialog open={!!toDelete} onOpenChange={(v) => !v && setToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete {toDelete?.name}?</AlertDialogTitle>
+            <AlertDialogTitle>למחוק את {toDelete?.name}?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently remove the client and all their folders, items, and tasks.
+              פעולה זו תמחק לצמיתות את הלקוח ואת כל התיקיות, הפריטים והמשימות שלו.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>ביטול</AlertDialogCancel>
             <AlertDialogAction onClick={() => toDelete && del.mutate(toDelete.id)}>
-              Delete
+              מחיקה
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

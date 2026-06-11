@@ -35,7 +35,7 @@ import {
 } from "@/lib/db-types";
 
 export const Route = createFileRoute("/_authenticated/tasks")({
-  head: () => ({ meta: [{ title: "Tasks — Atlas" }] }),
+  head: () => ({ meta: [{ title: "משימות — אטלס" }] }),
   component: TasksPage,
 });
 
@@ -127,12 +127,12 @@ function TasksPage() {
       }
     },
     onSuccess: () => {
-      toast.success("Task saved");
+      toast.success("המשימה נשמרה");
       qc.invalidateQueries({ queryKey: ["tasks"] });
       qc.invalidateQueries({ queryKey: ["dashboard"] });
       setDialog(false);
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : "Failed"),
+    onError: (e) => toast.error(e instanceof Error ? e.message : "הפעולה נכשלה"),
   });
 
   const updateStatus = useMutation({
@@ -152,7 +152,7 @@ function TasksPage() {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Task deleted");
+      toast.success("המשימה נמחקה");
       qc.invalidateQueries({ queryKey: ["tasks"] });
       qc.invalidateQueries({ queryKey: ["dashboard"] });
     },
@@ -180,11 +180,11 @@ function TasksPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight">Tasks</h1>
-          <p className="text-sm text-muted-foreground">{tasks.length} total</p>
+          <h1 className="text-3xl font-semibold tracking-tight">משימות</h1>
+          <p className="text-sm text-muted-foreground">סה"כ {tasks.length}</p>
         </div>
         <Button onClick={openNew}>
-          <Plus className="mr-2 h-4 w-4" /> New task
+          <Plus className="ms-2 h-4 w-4" /> משימה חדשה
         </Button>
       </div>
 
@@ -204,7 +204,7 @@ function TasksPage() {
               <div className="space-y-2">
                 {colTasks.length === 0 ? (
                   <p className="rounded-md border border-dashed py-8 text-center text-xs text-muted-foreground">
-                    Empty
+                    ריק
                   </p>
                 ) : (
                   colTasks.map((t) => {
@@ -242,7 +242,7 @@ function TasksPage() {
                               }`}
                             >
                               <Calendar className="h-3 w-3" />
-                              {format(parseISO(t.due_date), "MMM d")}
+                              {format(parseISO(t.due_date), "d MMM")}
                             </span>
                           )}
                         </div>
@@ -321,7 +321,7 @@ function TaskDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>{form.id ? "Edit task" : "New task"}</DialogTitle>
+          <DialogTitle>{form.id ? "עריכת משימה" : "משימה חדשה"}</DialogTitle>
         </DialogHeader>
         <form
           onSubmit={(e) => {
@@ -331,7 +331,7 @@ function TaskDialog({
           className="space-y-4"
         >
           <div className="space-y-2">
-            <Label htmlFor="ttitle">Title *</Label>
+            <Label htmlFor="ttitle">כותרת *</Label>
             <Input
               id="ttitle"
               value={form.title}
@@ -340,7 +340,7 @@ function TaskDialog({
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="tdesc">Description</Label>
+            <Label htmlFor="tdesc">תיאור</Label>
             <Textarea
               id="tdesc"
               rows={3}
@@ -350,7 +350,7 @@ function TaskDialog({
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="tdue">Due date</Label>
+              <Label htmlFor="tdue">תאריך יעד</Label>
               <Input
                 id="tdue"
                 type="date"
@@ -359,7 +359,7 @@ function TaskDialog({
               />
             </div>
             <div className="space-y-2">
-              <Label>Priority</Label>
+              <Label>עדיפות</Label>
               <Select
                 value={form.priority}
                 onValueChange={(v) => setForm({ ...form, priority: v as never })}
@@ -377,7 +377,7 @@ function TaskDialog({
               </Select>
             </div>
             <div className="space-y-2">
-              <Label>Status</Label>
+              <Label>סטטוס</Label>
               <Select
                 value={form.status}
                 onValueChange={(v) => setForm({ ...form, status: v as never })}
@@ -395,7 +395,7 @@ function TaskDialog({
               </Select>
             </div>
             <div className="space-y-2">
-              <Label>Client</Label>
+              <Label>לקוח</Label>
               <Select
                 value={form.client_id}
                 onValueChange={(v) => setForm({ ...form, client_id: v })}
@@ -404,7 +404,7 @@ function TaskDialog({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="none">No client</SelectItem>
+                  <SelectItem value="none">ללא לקוח</SelectItem>
                   {clients.map((c) => (
                     <SelectItem key={c.id} value={c.id}>
                       {c.name}
@@ -416,10 +416,10 @@ function TaskDialog({
           </div>
           <DialogFooter>
             <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>
-              Cancel
+              ביטול
             </Button>
             <Button type="submit" disabled={busy}>
-              {busy ? "Saving…" : "Save"}
+              {busy ? "שומר…" : "שמירה"}
             </Button>
           </DialogFooter>
         </form>

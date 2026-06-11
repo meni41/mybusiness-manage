@@ -216,11 +216,10 @@ function ClientDetail() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-base">פרויקטים / תיקיות</CardTitle>
-          {null}
+          <Button size="sm" onClick={() => setFolderDialog(true)}>
+            <FolderPlus className="ms-2 h-4 w-4" /> תיקייה חדשה
+          </Button>
         </CardHeader>
-        <CardContent />
-      </Card>
-      {/*__REMOVE__*/}
           <Button size="sm" onClick={() => setFolderDialog(true)}>
             <FolderPlus className="ms-2 h-4 w-4" /> תיקייה חדשה
           </Button>

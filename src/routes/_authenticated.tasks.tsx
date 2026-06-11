@@ -136,7 +136,7 @@ function TasksPage() {
   });
 
   const updateStatus = useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: string }) => {
+    mutationFn: async ({ id, status }: { id: string; status: (typeof TASK_STATUSES)[number] }) => {
       const { error } = await supabase.from("tasks").update({ status }).eq("id", id);
       if (error) throw error;
     },
@@ -249,7 +249,9 @@ function TasksPage() {
                         <div className="mt-3 flex items-center justify-between gap-2">
                           <Select
                             value={t.status}
-                            onValueChange={(v) => updateStatus.mutate({ id: t.id, status: v })}
+                            onValueChange={(v) =>
+                              updateStatus.mutate({ id: t.id, status: v as (typeof TASK_STATUSES)[number] })
+                            }
                           >
                             <SelectTrigger className="h-7 w-[130px] text-xs">
                               <SelectValue />

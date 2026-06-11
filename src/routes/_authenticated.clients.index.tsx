@@ -34,9 +34,8 @@ export const Route = createFileRoute("/_authenticated/clients/")({
 });
 
 const statusColor: Record<string, string> = {
-  active: "bg-success/15 text-success border-success/30",
-  lead: "bg-info/15 text-info border-info/30",
-  inactive: "bg-muted text-muted-foreground border-border",
+  quote: "bg-info/15 text-info border-info/30",
+  in_progress: "bg-success/15 text-success border-success/30",
   archived: "bg-secondary text-secondary-foreground border-border",
 };
 

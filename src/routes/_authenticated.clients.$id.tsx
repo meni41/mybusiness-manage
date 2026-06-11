@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { toast } from "sonner";
@@ -213,6 +213,8 @@ function ClientDetail() {
         )}
       </Card>
 
+      <FinanceSection client={client} />
+
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-base">פרויקטים / תיקיות</CardTitle>
@@ -405,6 +407,195 @@ function FolderDialog({
         </form>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function formatILS(n: number) {
+  return new Intl.NumberFormat("he-IL", {
+    style: "currency",
+    currency: "ILS",
+    maximumFractionDigits: 2,
+  }).format(Number.isFinite(n) ? n : 0);
+}
+
+function FinanceSection({ client }: { client: Client }) {
+  const qc = useQueryClient();
+  const [total, setTotal] = useState<string>(String(client.total_amount ?? 0));
+  const [paid, setPaid] = useState<string>(String(client.amount_paid ?? 0));
+  const [meters, setMeters] = useState<string>(
+    client.quote_meters != null ? String(client.quote_meters) : "",
+  );
+  const [rate, setRate] = useState<string>(String(client.quote_rate ?? 80));
+
+  useEffect(() => {
+    setTotal(String(client.total_amount ?? 0));
+    setPaid(String(client.amount_paid ?? 0));
+    setMeters(client.quote_meters != null ? String(client.quote_meters) : "");
+    setRate(String(client.quote_rate ?? 80));
+  }, [client.id, client.total_amount, client.amount_paid, client.quote_meters, client.quote_rate]);
+
+  const totalNum = Number(total) || 0;
+  const paidNum = Number(paid) || 0;
+  const remaining = Math.max(0, totalNum - paidNum);
+
+  const metersNum = Number(meters) || 0;
+  const rateNum = Number(rate) || 0;
+  const quoteTotal = useMemo(() => metersNum * rateNum, [metersNum, rateNum]);
+
+  const m1 = totalNum * 0.35;
+  const m2 = totalNum * 0.35;
+  const m3 = totalNum * 0.30;
+
+  const save = useMutation({
+    mutationFn: async (payload: Partial<Client>) => {
+      const { error } = await supabase.from("clients").update(payload).eq("id", client.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("נשמר");
+      qc.invalidateQueries({ queryKey: ["client", client.id] });
+      qc.invalidateQueries({ queryKey: ["clients"] });
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "השמירה נכשלה"),
+  });
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-base">מעקב כספי ללקוח</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <div className="grid gap-4 sm:grid-cols-3">
+          <div className="space-y-2">
+            <Label htmlFor="total">סכום לתשלום (₪)</Label>
+            <Input
+              id="total"
+              type="number"
+              inputMode="decimal"
+              min={0}
+              value={total}
+              onChange={(e) => setTotal(e.target.value)}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="paid">כמה שולם (₪)</Label>
+            <Input
+              id="paid"
+              type="number"
+              inputMode="decimal"
+              min={0}
+              value={paid}
+              onChange={(e) => setPaid(e.target.value)}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>יתרת תשלום</Label>
+            <div className="flex h-9 items-center rounded-md border border-input bg-muted/40 px-3 text-sm font-semibold">
+              {formatILS(remaining)}
+            </div>
+          </div>
+        </div>
+        <div className="flex justify-end">
+          <Button
+            size="sm"
+            onClick={() =>
+              save.mutate({ total_amount: totalNum, amount_paid: paidNum })
+            }
+            disabled={save.isPending}
+          >
+            שמירת סכומים
+          </Button>
+        </div>
+
+        {client.status === "quote" && (
+          <div className="space-y-4 rounded-lg border border-dashed p-4">
+            <div>
+              <h3 className="text-sm font-semibold">מחשבון הצעת מחיר</h3>
+              <p className="text-xs text-muted-foreground">
+                מחושב לפי מספר מטרים × תעריף למטר.
+              </p>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div className="space-y-2">
+                <Label htmlFor="meters">מספר מטרים</Label>
+                <Input
+                  id="meters"
+                  type="number"
+                  inputMode="decimal"
+                  min={0}
+                  value={meters}
+                  onChange={(e) => setMeters(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="rate">תעריף למטר (₪)</Label>
+                <Input
+                  id="rate"
+                  type="number"
+                  inputMode="decimal"
+                  min={0}
+                  value={rate}
+                  onChange={(e) => setRate(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>סה״כ לתשלום</Label>
+                <div className="flex h-9 items-center rounded-md border border-input bg-muted/40 px-3 text-sm font-semibold">
+                  {formatILS(quoteTotal)}
+                </div>
+              </div>
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() =>
+                  save.mutate({
+                    quote_meters: metersNum,
+                    quote_rate: rateNum,
+                  })
+                }
+                disabled={save.isPending}
+              >
+                שמירת חישוב
+              </Button>
+              <Button
+                size="sm"
+                onClick={() => {
+                  setTotal(String(quoteTotal));
+                  save.mutate({
+                    quote_meters: metersNum,
+                    quote_rate: rateNum,
+                    total_amount: quoteTotal,
+                  });
+                }}
+                disabled={save.isPending || quoteTotal <= 0}
+              >
+                החל כסכום לתשלום
+              </Button>
+            </div>
+          </div>
+        )}
+
+        <div className="space-y-3">
+          <h3 className="text-sm font-semibold">חלוקה לתשלומים</h3>
+          <div className="grid gap-3 sm:grid-cols-3">
+            <MilestoneCard label="תשלום ראשון (35%)" value={m1} />
+            <MilestoneCard label="תשלום שני (35%)" value={m2} />
+            <MilestoneCard label="תשלום שלישי (30%)" value={m3} />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function MilestoneCard({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="rounded-md border bg-card p-3">
+      <p className="text-xs text-muted-foreground">{label}</p>
+      <p className="mt-1 text-lg font-semibold">{formatILS(value)}</p>
+    </div>
   );
 }
 

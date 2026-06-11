@@ -33,7 +33,7 @@ function Dashboard() {
   const tasks = data?.tasks ?? [];
   const folders = data?.folders ?? [];
 
-  const activeClients = clients.filter((c) => c.status === "active").length;
+  const activeClients = clients.filter((c) => c.status === "in_progress").length;
   const pendingTasks = tasks.filter((t) => t.status !== "done").length;
   const completedTasks = tasks.filter((t) => t.status === "done").length;
 
@@ -47,7 +47,7 @@ function Dashboard() {
     .slice(0, 8);
 
   const stats = [
-    { label: "לקוחות פעילים", value: activeClients, icon: Users, tint: "text-info" },
+    { label: "לקוחות בתהליך", value: activeClients, icon: Users, tint: "text-info" },
     { label: "משימות פתוחות", value: pendingTasks, icon: CheckSquare, tint: "text-warning" },
     { label: "משימות שהושלמו", value: completedTasks, icon: CheckSquare, tint: "text-success" },
     { label: "פרויקטים / תיקיות", value: folders.length, icon: FolderOpen, tint: "text-primary" },

@@ -35,7 +35,7 @@ import {
 } from "@/lib/db-types";
 
 export const Route = createFileRoute("/_authenticated/tasks")({
-  head: () => ({ meta: [{ title: "Tasks — Atlas" }] }),
+  head: () => ({ meta: [{ title: "משימות — אטלס" }] }),
   component: TasksPage,
 });
 
@@ -127,12 +127,12 @@ function TasksPage() {
       }
     },
     onSuccess: () => {
-      toast.success("Task saved");
+      toast.success("המשימה נשמרה");
       qc.invalidateQueries({ queryKey: ["tasks"] });
       qc.invalidateQueries({ queryKey: ["dashboard"] });
       setDialog(false);
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : "Failed"),
+    onError: (e) => toast.error(e instanceof Error ? e.message : "הפעולה נכשלה"),
   });
 
   const updateStatus = useMutation({
@@ -152,7 +152,7 @@ function TasksPage() {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Task deleted");
+      toast.success("המשימה נמחקה");
       qc.invalidateQueries({ queryKey: ["tasks"] });
       qc.invalidateQueries({ queryKey: ["dashboard"] });
     },
@@ -180,11 +180,11 @@ function TasksPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight">Tasks</h1>
-          <p className="text-sm text-muted-foreground">{tasks.length} total</p>
+          <h1 className="text-3xl font-semibold tracking-tight">משימות</h1>
+          <p className="text-sm text-muted-foreground">סה"כ {tasks.length}</p>
         </div>
         <Button onClick={openNew}>
-          <Plus className="mr-2 h-4 w-4" /> New task
+          <Plus className="ms-2 h-4 w-4" /> משימה חדשה
         </Button>
       </div>
 
@@ -204,7 +204,7 @@ function TasksPage() {
               <div className="space-y-2">
                 {colTasks.length === 0 ? (
                   <p className="rounded-md border border-dashed py-8 text-center text-xs text-muted-foreground">
-                    Empty
+                    ריק
                   </p>
                 ) : (
                   colTasks.map((t) => {
@@ -242,7 +242,7 @@ function TasksPage() {
                               }`}
                             >
                               <Calendar className="h-3 w-3" />
-                              {format(parseISO(t.due_date), "MMM d")}
+                              {format(parseISO(t.due_date), "d MMM")}
                             </span>
                           )}
                         </div>

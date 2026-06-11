@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       clients: {
         Row: {
+          amount_paid: number
           company: string | null
           created_at: string
           email: string | null
@@ -23,11 +24,15 @@ export type Database = {
           name: string
           notes: string | null
           phone: string | null
+          quote_meters: number | null
+          quote_rate: number
           status: Database["public"]["Enums"]["client_status"]
+          total_amount: number
           updated_at: string
           user_id: string
         }
         Insert: {
+          amount_paid?: number
           company?: string | null
           created_at?: string
           email?: string | null
@@ -35,11 +40,15 @@ export type Database = {
           name: string
           notes?: string | null
           phone?: string | null
+          quote_meters?: number | null
+          quote_rate?: number
           status?: Database["public"]["Enums"]["client_status"]
+          total_amount?: number
           updated_at?: string
           user_id: string
         }
         Update: {
+          amount_paid?: number
           company?: string | null
           created_at?: string
           email?: string | null
@@ -47,7 +56,10 @@ export type Database = {
           name?: string
           notes?: string | null
           phone?: string | null
+          quote_meters?: number | null
+          quote_rate?: number
           status?: Database["public"]["Enums"]["client_status"]
+          total_amount?: number
           updated_at?: string
           user_id?: string
         }
@@ -200,7 +212,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      client_status: "active" | "inactive" | "lead" | "archived"
+      client_status: "quote" | "in_progress" | "archived"
       folder_item_kind: "note" | "link"
       task_priority: "low" | "medium" | "high"
       task_status: "todo" | "in_progress" | "done"
@@ -331,7 +343,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      client_status: ["active", "inactive", "lead", "archived"],
+      client_status: ["quote", "in_progress", "archived"],
       folder_item_kind: ["note", "link"],
       task_priority: ["low", "medium", "high"],
       task_status: ["todo", "in_progress", "done"],

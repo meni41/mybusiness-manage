@@ -10,15 +10,13 @@ export type TaskInsert = TablesInsert<"tasks">;
 
 export const TASK_STATUSES = ["todo", "in_progress", "done"] as const;
 export const TASK_PRIORITIES = ["low", "medium", "high"] as const;
-export const CLIENT_STATUSES = ["active", "lead", "inactive", "archived"] as const;
+export const CLIENT_STATUSES = ["quote", "in_progress", "archived"] as const;
 
 export const statusLabel: Record<string, string> = {
   todo: "לביצוע",
   in_progress: "בתהליך",
   done: "הושלם",
-  active: "פעיל",
-  lead: "ליד",
-  inactive: "לא פעיל",
+  quote: "הצעת מחיר",
   archived: "בארכיון",
   low: "נמוכה",
   medium: "בינונית",

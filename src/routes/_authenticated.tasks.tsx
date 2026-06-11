@@ -321,7 +321,7 @@ function TaskDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>{form.id ? "Edit task" : "New task"}</DialogTitle>
+          <DialogTitle>{form.id ? "עריכת משימה" : "משימה חדשה"}</DialogTitle>
         </DialogHeader>
         <form
           onSubmit={(e) => {
@@ -331,7 +331,7 @@ function TaskDialog({
           className="space-y-4"
         >
           <div className="space-y-2">
-            <Label htmlFor="ttitle">Title *</Label>
+            <Label htmlFor="ttitle">כותרת *</Label>
             <Input
               id="ttitle"
               value={form.title}
@@ -340,7 +340,7 @@ function TaskDialog({
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="tdesc">Description</Label>
+            <Label htmlFor="tdesc">תיאור</Label>
             <Textarea
               id="tdesc"
               rows={3}
@@ -350,7 +350,7 @@ function TaskDialog({
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="tdue">Due date</Label>
+              <Label htmlFor="tdue">תאריך יעד</Label>
               <Input
                 id="tdue"
                 type="date"
@@ -359,7 +359,7 @@ function TaskDialog({
               />
             </div>
             <div className="space-y-2">
-              <Label>Priority</Label>
+              <Label>עדיפות</Label>
               <Select
                 value={form.priority}
                 onValueChange={(v) => setForm({ ...form, priority: v as never })}
@@ -377,7 +377,7 @@ function TaskDialog({
               </Select>
             </div>
             <div className="space-y-2">
-              <Label>Status</Label>
+              <Label>סטטוס</Label>
               <Select
                 value={form.status}
                 onValueChange={(v) => setForm({ ...form, status: v as never })}
@@ -395,7 +395,7 @@ function TaskDialog({
               </Select>
             </div>
             <div className="space-y-2">
-              <Label>Client</Label>
+              <Label>לקוח</Label>
               <Select
                 value={form.client_id}
                 onValueChange={(v) => setForm({ ...form, client_id: v })}
@@ -404,7 +404,7 @@ function TaskDialog({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="none">No client</SelectItem>
+                  <SelectItem value="none">ללא לקוח</SelectItem>
                   {clients.map((c) => (
                     <SelectItem key={c.id} value={c.id}>
                       {c.name}
@@ -416,10 +416,10 @@ function TaskDialog({
           </div>
           <DialogFooter>
             <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>
-              Cancel
+              ביטול
             </Button>
             <Button type="submit" disabled={busy}>
-              {busy ? "Saving…" : "Save"}
+              {busy ? "שומר…" : "שמירה"}
             </Button>
           </DialogFooter>
         </form>

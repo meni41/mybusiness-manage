@@ -380,7 +380,7 @@ function FolderDialog({
     >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>New folder</DialogTitle>
+          <DialogTitle>תיקייה חדשה</DialogTitle>
         </DialogHeader>
         <form
           onSubmit={(e) => {
@@ -390,16 +390,16 @@ function FolderDialog({
           className="space-y-4"
         >
           <div className="space-y-2">
-            <Label htmlFor="fname">Name *</Label>
+            <Label htmlFor="fname">שם *</Label>
             <Input id="fname" value={name} onChange={(e) => setName(e.target.value)} required />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="fdesc">Description</Label>
+            <Label htmlFor="fdesc">תיאור</Label>
             <Textarea id="fdesc" rows={2} value={description} onChange={(e) => setDescription(e.target.value)} />
           </div>
           <DialogFooter>
             <Button type="submit" disabled={busy}>
-              {busy ? "Saving…" : "Create"}
+              {busy ? "שומר…" : "יצירה"}
             </Button>
           </DialogFooter>
         </form>
@@ -438,7 +438,7 @@ function ItemDialog({
     >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{kind === "note" ? "New note" : "New link"}</DialogTitle>
+          <DialogTitle>{kind === "note" ? "הערה חדשה" : "קישור חדש"}</DialogTitle>
         </DialogHeader>
         <form
           onSubmit={(e) => {
@@ -448,17 +448,17 @@ function ItemDialog({
           className="space-y-4"
         >
           <div className="space-y-2">
-            <Label htmlFor="ititle">Title *</Label>
+            <Label htmlFor="ititle">כותרת *</Label>
             <Input id="ititle" value={title} onChange={(e) => setTitle(e.target.value)} required />
           </div>
           {kind === "note" ? (
             <div className="space-y-2">
-              <Label htmlFor="icontent">Content</Label>
+              <Label htmlFor="icontent">תוכן</Label>
               <Textarea id="icontent" rows={5} value={content} onChange={(e) => setContent(e.target.value)} />
             </div>
           ) : (
             <div className="space-y-2">
-              <Label htmlFor="iurl">URL *</Label>
+              <Label htmlFor="iurl">כתובת URL *</Label>
               <Input
                 id="iurl"
                 type="url"
@@ -471,7 +471,7 @@ function ItemDialog({
           )}
           <DialogFooter>
             <Button type="submit" disabled={busy}>
-              {busy ? "Saving…" : "Add"}
+              {busy ? "שומר…" : "הוספה"}
             </Button>
           </DialogFooter>
         </form>

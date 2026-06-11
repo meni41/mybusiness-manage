@@ -213,6 +213,8 @@ function ClientDetail() {
         )}
       </Card>
 
+      <FinanceSection client={client} />
+
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-base">פרויקטים / תיקיות</CardTitle>

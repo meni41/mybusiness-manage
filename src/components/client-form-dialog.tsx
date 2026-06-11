@@ -90,21 +90,21 @@ export function ClientFormDialog({
       }
     },
     onSuccess: () => {
-      toast.success(client ? "Client updated" : "Client added");
+      toast.success(client ? "הלקוח עודכן" : "הלקוח נוסף");
       qc.invalidateQueries({ queryKey: ["clients"] });
       qc.invalidateQueries({ queryKey: ["client", client?.id] });
       qc.invalidateQueries({ queryKey: ["dashboard"] });
       onOpenChange(false);
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : "Failed"),
+    onError: (e) => toast.error(e instanceof Error ? e.message : "הפעולה נכשלה"),
   });
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>{client ? "Edit client" : "New client"}</DialogTitle>
-          <DialogDescription>Manage client contact details and status.</DialogDescription>
+          <DialogTitle>{client ? "עריכת לקוח" : "לקוח חדש"}</DialogTitle>
+          <DialogDescription>ניהול פרטי קשר וסטטוס של הלקוח.</DialogDescription>
         </DialogHeader>
         <form
           onSubmit={(e) => {
@@ -115,7 +115,7 @@ export function ClientFormDialog({
         >
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2 sm:col-span-2">
-              <Label htmlFor="name">Name *</Label>
+              <Label htmlFor="name">שם *</Label>
               <Input
                 id="name"
                 value={form.name}
@@ -124,7 +124,7 @@ export function ClientFormDialog({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">דוא"ל</Label>
               <Input
                 id="email"
                 type="email"
@@ -133,7 +133,7 @@ export function ClientFormDialog({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="phone">Phone</Label>
+              <Label htmlFor="phone">טלפון</Label>
               <Input
                 id="phone"
                 value={form.phone}
@@ -141,7 +141,7 @@ export function ClientFormDialog({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="company">Company</Label>
+              <Label htmlFor="company">חברה</Label>
               <Input
                 id="company"
                 value={form.company}
@@ -149,7 +149,7 @@ export function ClientFormDialog({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="status">Status</Label>
+              <Label htmlFor="status">סטטוס</Label>
               <Select
                 value={form.status}
                 onValueChange={(v) => setForm({ ...form, status: v as never })}
@@ -167,7 +167,7 @@ export function ClientFormDialog({
               </Select>
             </div>
             <div className="space-y-2 sm:col-span-2">
-              <Label htmlFor="notes">Notes</Label>
+              <Label htmlFor="notes">הערות</Label>
               <Textarea
                 id="notes"
                 rows={3}
@@ -178,10 +178,10 @@ export function ClientFormDialog({
           </div>
           <DialogFooter>
             <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>
-              Cancel
+              ביטול
             </Button>
             <Button type="submit" disabled={mutation.isPending}>
-              {mutation.isPending ? "Saving…" : client ? "Save changes" : "Create client"}
+              {mutation.isPending ? "שומר…" : client ? "שמירת שינויים" : "יצירת לקוח"}
             </Button>
           </DialogFooter>
         </form>

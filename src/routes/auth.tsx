@@ -16,7 +16,7 @@ export const Route = createFileRoute("/auth")({
 
 const OWNER_EMAIL = "owner@atlas.local";
 const OWNER_PASSWORD = "atlas-owner-5555-secret";
-const GATE_PASSWORD = "5555";
+const GATE_PASSWORD = (import.meta.env.VITE_GATE_PASSWORD as string | undefined) ?? "5555";
 
 async function signInOrCreate() {
   const { error } = await supabase.auth.signInWithPassword({

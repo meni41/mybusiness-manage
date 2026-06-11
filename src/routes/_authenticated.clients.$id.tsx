@@ -220,10 +220,6 @@ function ClientDetail() {
             <FolderPlus className="ms-2 h-4 w-4" /> תיקייה חדשה
           </Button>
         </CardHeader>
-          <Button size="sm" onClick={() => setFolderDialog(true)}>
-            <FolderPlus className="ms-2 h-4 w-4" /> תיקייה חדשה
-          </Button>
-        </CardHeader>
         <CardContent>
           {folders.length === 0 ? (
             <p className="py-6 text-center text-sm text-muted-foreground">

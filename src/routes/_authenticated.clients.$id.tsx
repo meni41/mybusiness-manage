@@ -36,7 +36,7 @@ import { ClientFormDialog } from "@/components/client-form-dialog";
 import { statusLabel, type Client, type Folder as FolderT, type FolderItem } from "@/lib/db-types";
 
 export const Route = createFileRoute("/_authenticated/clients/$id")({
-  head: () => ({ meta: [{ title: "Client — Atlas" }] }),
+  head: () => ({ meta: [{ title: "לקוח — אטלס" }] }),
   component: ClientDetail,
 });
 
@@ -99,12 +99,12 @@ function ClientDetail() {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Folder created");
+      toast.success("התיקייה נוצרה");
       qc.invalidateQueries({ queryKey: ["folders", id] });
       qc.invalidateQueries({ queryKey: ["dashboard"] });
       setFolderDialog(false);
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : "Failed"),
+    onError: (e) => toast.error(e instanceof Error ? e.message : "הפעולה נכשלה"),
   });
 
   const deleteFolder = useMutation({
@@ -113,7 +113,7 @@ function ClientDetail() {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Folder removed");
+      toast.success("התיקייה נמחקה");
       qc.invalidateQueries({ queryKey: ["folders", id] });
       qc.invalidateQueries({ queryKey: ["dashboard"] });
       setActiveFolder(null);
@@ -133,7 +133,7 @@ function ClientDetail() {
         try {
           new URL(p.data.url);
         } catch {
-          throw new Error("Enter a valid URL");
+          throw new Error("יש להזין כתובת URL תקינה");
         }
       }
       const { error } = await supabase.from("folder_items").insert({
@@ -147,11 +147,11 @@ function ClientDetail() {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Added");
+      toast.success("נוסף בהצלחה");
       qc.invalidateQueries({ queryKey: ["folder_items", currentFolderId] });
       setItemDialog({ open: false });
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : "Failed"),
+    onError: (e) => toast.error(e instanceof Error ? e.message : "הפעולה נכשלה"),
   });
 
   const deleteItem = useMutation({
@@ -163,17 +163,17 @@ function ClientDetail() {
   });
 
   if (!client) {
-    return <p className="text-sm text-muted-foreground">Loading…</p>;
+    return <p className="text-sm text-muted-foreground">טוען…</p>;
   }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-3">
         <Link to="/clients" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
-          <ArrowLeft className="h-4 w-4" /> Back to clients
+          <ArrowLeft className="h-4 w-4 rotate-180" /> חזרה ללקוחות
         </Link>
         <Button variant="outline" onClick={() => setEditClient(true)}>
-          <Pencil className="mr-2 h-4 w-4" /> Edit client
+          <Pencil className="ms-2 h-4 w-4" /> עריכת לקוח
         </Button>
       </div>
 
@@ -215,15 +215,15 @@ function ClientDetail() {
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-base">Projects / Folders</CardTitle>
+          <CardTitle className="text-base">פרויקטים / תיקיות</CardTitle>
           <Button size="sm" onClick={() => setFolderDialog(true)}>
-            <FolderPlus className="mr-2 h-4 w-4" /> New folder
+            <FolderPlus className="ms-2 h-4 w-4" /> תיקייה חדשה
           </Button>
         </CardHeader>
         <CardContent>
           {folders.length === 0 ? (
             <p className="py-6 text-center text-sm text-muted-foreground">
-              No folders yet. Create one to organize notes and links.
+              אין תיקיות עדיין. צרו תיקייה כדי לארגן הערות וקישורים.
             </p>
           ) : (
             <Tabs
@@ -253,20 +253,20 @@ function ClientDetail() {
                         variant="outline"
                         onClick={() => setItemDialog({ open: true, folderId: f.id, kind: "note" })}
                       >
-                        <StickyNote className="mr-1.5 h-4 w-4" /> Note
+                        <StickyNote className="ms-1.5 h-4 w-4" /> הערה
                       </Button>
                       <Button
                         size="sm"
                         variant="outline"
                         onClick={() => setItemDialog({ open: true, folderId: f.id, kind: "link" })}
                       >
-                        <LinkIcon className="mr-1.5 h-4 w-4" /> Link
+                        <LinkIcon className="ms-1.5 h-4 w-4" /> קישור
                       </Button>
                       <Button
                         size="sm"
                         variant="ghost"
                         onClick={() => {
-                          if (confirm(`Delete folder "${f.name}" and all its items?`)) {
+                          if (confirm(`למחוק את התיקייה "${f.name}" וכל הפריטים שבה?`)) {
                             deleteFolder.mutate(f.id);
                           }
                         }}
@@ -278,7 +278,7 @@ function ClientDetail() {
 
                   {items.length === 0 ? (
                     <p className="rounded-md border border-dashed py-8 text-center text-sm text-muted-foreground">
-                      Empty. Add a note or link.
+                      ריק. הוסיפו הערה או קישור.
                     </p>
                   ) : (
                     <ul className="space-y-2">

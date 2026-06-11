@@ -1,6 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { z } from "zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -8,25 +7,38 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Briefcase } from "lucide-react";
+import { Lock } from "lucide-react";
 
 export const Route = createFileRoute("/auth")({
-  head: () => ({
-    meta: [{ title: "התחברות — אטלס" }],
-  }),
+  head: () => ({ meta: [{ title: "כניסה — אטלס" }] }),
   component: AuthPage,
 });
 
-const schema = z.object({
-  email: z.string().trim().email("יש להזין כתובת דוא\"ל תקינה").max(255),
-  password: z.string().min(6, "לפחות 6 תווים").max(72),
-});
+const OWNER_EMAIL = "owner@atlas.local";
+const OWNER_PASSWORD = "atlas-owner-5555-secret";
+const GATE_PASSWORD = "5555";
+
+async function signInOrCreate() {
+  const { error } = await supabase.auth.signInWithPassword({
+    email: OWNER_EMAIL,
+    password: OWNER_PASSWORD,
+  });
+  if (!error) return;
+  const { error: signUpError } = await supabase.auth.signUp({
+    email: OWNER_EMAIL,
+    password: OWNER_PASSWORD,
+  });
+  if (signUpError) throw signUpError;
+  const { error: retryError } = await supabase.auth.signInWithPassword({
+    email: OWNER_EMAIL,
+    password: OWNER_PASSWORD,
+  });
+  if (retryError) throw retryError;
+}
 
 function AuthPage() {
   const navigate = useNavigate();
   const { session, loading } = useAuth();
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -36,28 +48,16 @@ function AuthPage() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const parsed = schema.safeParse({ email, password });
-    if (!parsed.success) {
-      toast.error(parsed.error.issues[0].message);
+    if (password !== GATE_PASSWORD) {
+      toast.error("סיסמה שגויה");
       return;
     }
     setBusy(true);
     try {
-      if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
-          email: parsed.data.email,
-          password: parsed.data.password,
-          options: { emailRedirectTo: `${window.location.origin}/` },
-        });
-        if (error) throw error;
-        toast.success("החשבון נוצר — ברוכים הבאים!");
-      } else {
-        const { error } = await supabase.auth.signInWithPassword(parsed.data);
-        if (error) throw error;
-        toast.success("ברוכים השבים");
-      }
+      await signInOrCreate();
+      toast.success("ברוכים השבים");
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "ההתחברות נכשלה");
+      toast.error(err instanceof Error ? err.message : "הכניסה נכשלה");
     } finally {
       setBusy(false);
     }
@@ -69,55 +69,30 @@ function AuthPage() {
       <Card className="w-full max-w-md shadow-[var(--shadow-elegant)]">
         <CardHeader className="space-y-3 text-center">
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-[image:var(--gradient-primary)] text-primary-foreground">
-            <Briefcase className="h-6 w-6" />
+            <Lock className="h-6 w-6" />
           </div>
-          <CardTitle className="text-2xl">
-            {mode === "signin" ? "ברוכים השבים" : "יצירת סביבת עבודה"}
-          </CardTitle>
-          <CardDescription>
-            ניהול לקוחות, פרויקטים ומשימות — הכל במקום אחד.
-          </CardDescription>
+          <CardTitle className="text-2xl">סביבה פרטית</CardTitle>
+          <CardDescription>הזינו את סיסמת הכניסה כדי להמשיך.</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={submit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">דוא"ל</Label>
-              <Input
-                id="email"
-                type="email"
-                autoComplete="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="name@company.com"
-                required
-              />
-            </div>
             <div className="space-y-2">
               <Label htmlFor="password">סיסמה</Label>
               <Input
                 id="password"
                 type="password"
-                autoComplete={mode === "signup" ? "new-password" : "current-password"}
+                autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
+                placeholder="••••"
+                autoFocus
                 required
               />
             </div>
             <Button type="submit" className="w-full" disabled={busy}>
-              {busy ? "אנא המתינו…" : mode === "signin" ? "התחברות" : "יצירת חשבון"}
+              {busy ? "אנא המתינו…" : "כניסה"}
             </Button>
           </form>
-          <p className="mt-4 text-center text-sm text-muted-foreground">
-            {mode === "signin" ? "חדשים כאן?" : "כבר יש לכם חשבון?"}{" "}
-            <button
-              type="button"
-              onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
-              className="font-medium text-primary hover:underline"
-            >
-              {mode === "signin" ? "יצירת חשבון" : "התחברות"}
-            </button>
-          </p>
         </CardContent>
       </Card>
     </div>

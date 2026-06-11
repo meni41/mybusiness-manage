@@ -50,7 +50,7 @@ export function ClientFormDialog({
     email: "",
     phone: "",
     company: "",
-    status: "active" as (typeof CLIENT_STATUSES)[number],
+    status: "quote" as (typeof CLIENT_STATUSES)[number],
     notes: "",
   });
 
@@ -61,7 +61,7 @@ export function ClientFormDialog({
         email: client?.email ?? "",
         phone: client?.phone ?? "",
         company: client?.company ?? "",
-        status: (client?.status as (typeof CLIENT_STATUSES)[number]) ?? "active",
+        status: (client?.status as (typeof CLIENT_STATUSES)[number]) ?? "quote",
         notes: client?.notes ?? "",
       });
     }

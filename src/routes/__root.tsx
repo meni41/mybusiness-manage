@@ -79,14 +79,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { title: "ניהול העסק שלנו" },
+      { name: "description", content: "ClientFlow Pro is a business management web app for organizing clients, projects, and tasks." },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "ניהול העסק שלנו" },
+      { property: "og:description", content: "ClientFlow Pro is a business management web app for organizing clients, projects, and tasks." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "ניהול העסק שלנו" },
+      { name: "twitter:description", content: "ClientFlow Pro is a business management web app for organizing clients, projects, and tasks." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/5e3767e4-5e09-47e8-951a-d0ce60183f05/id-preview-790aa37b--4f22ce96-5140-4ea4-be1f-0da09fc5247f.lovable.app-1781201831782.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/5e3767e4-5e09-47e8-951a-d0ce60183f05/id-preview-790aa37b--4f22ce96-5140-4ea4-be1f-0da09fc5247f.lovable.app-1781201831782.png" },
     ],
     links: [
       {

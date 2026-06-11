@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { verifyGate } from "@/lib/gate.functions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,28 +14,6 @@ export const Route = createFileRoute("/auth")({
   head: () => ({ meta: [{ title: "כניסה — אטלס" }] }),
   component: AuthPage,
 });
-
-const OWNER_EMAIL = "owner@atlas.local";
-const OWNER_PASSWORD = "atlas-owner-5555-secret";
-const GATE_PASSWORD = (import.meta.env.VITE_GATE_PASSWORD as string | undefined) ?? "5555";
-
-async function signInOrCreate() {
-  const { error } = await supabase.auth.signInWithPassword({
-    email: OWNER_EMAIL,
-    password: OWNER_PASSWORD,
-  });
-  if (!error) return;
-  const { error: signUpError } = await supabase.auth.signUp({
-    email: OWNER_EMAIL,
-    password: OWNER_PASSWORD,
-  });
-  if (signUpError) throw signUpError;
-  const { error: retryError } = await supabase.auth.signInWithPassword({
-    email: OWNER_EMAIL,
-    password: OWNER_PASSWORD,
-  });
-  if (retryError) throw retryError;
-}
 
 function AuthPage() {
   const navigate = useNavigate();
@@ -48,16 +27,18 @@ function AuthPage() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password !== GATE_PASSWORD) {
-      toast.error("סיסמה שגויה");
-      return;
-    }
     setBusy(true);
     try {
-      await signInOrCreate();
+      const tokens = await verifyGate({ data: { password } });
+      const { error } = await supabase.auth.setSession({
+        access_token: tokens.access_token,
+        refresh_token: tokens.refresh_token,
+      });
+      if (error) throw error;
       toast.success("ברוכים השבים");
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "הכניסה נכשלה");
+      const msg = err instanceof Error ? err.message : "הכניסה נכשלה";
+      toast.error(msg.includes("INVALID_PASSWORD") ? "סיסמה שגויה" : "הכניסה נכשלה");
     } finally {
       setBusy(false);
     }

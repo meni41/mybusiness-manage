@@ -51,6 +51,12 @@ const priorityBadge: Record<string, string> = {
   low: "bg-muted text-muted-foreground border-border",
 };
 
+const priorityCardClass: Record<string, string> = {
+  high: "border-r-4 border-r-[#EF4444] bg-[#EF4444]/5",
+  medium: "border-r-4 border-r-[#F59E0B] bg-[#F59E0B]/5",
+  low: "border-r-4 border-r-[#10B981] bg-[#10B981]/5",
+};
+
 type FormState = {
   id?: string;
   title: string;
@@ -214,7 +220,7 @@ function TasksPage() {
                     return (
                       <div
                         key={t.id}
-                        className="group rounded-lg border border-border bg-card p-3 transition hover:border-primary/40 hover:shadow-sm"
+                        className={`group rounded-lg border border-border bg-card p-3 transition hover:shadow-sm ${priorityCardClass[t.priority] ?? ""}`}
                       >
                         <div className="flex items-start justify-between gap-2">
                           <h3 className="text-sm font-medium leading-snug">{t.title}</h3>

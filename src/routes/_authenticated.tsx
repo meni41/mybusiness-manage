@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { useAuth } from "@/hooks/use-auth";
+import { UrgentTaskPopup } from "@/components/urgent-task-popup";
 
 export const Route = createFileRoute("/_authenticated")({
   component: AuthedLayout,
@@ -39,6 +40,7 @@ function AuthedLayout() {
           </main>
         </div>
       </div>
+      <UrgentTaskPopup />
     </SidebarProvider>
   );
 }

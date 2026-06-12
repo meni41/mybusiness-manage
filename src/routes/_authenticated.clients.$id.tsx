@@ -15,6 +15,7 @@ import {
   Phone,
   Building2,
   Pencil,
+  FileDown,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -34,6 +35,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ClientFormDialog } from "@/components/client-form-dialog";
 import { statusLabel, type Client, type Folder as FolderT, type FolderItem } from "@/lib/db-types";
+import { openQuotePdf } from "@/lib/quote-pdf";
 
 export const Route = createFileRoute("/_authenticated/clients/$id")({
   head: () => ({ meta: [{ title: "לקוח — אטלס" }] }),
@@ -48,6 +50,8 @@ function ClientDetail() {
   const [itemDialog, setItemDialog] = useState<{ open: boolean; folderId?: string; kind?: "note" | "link" }>({ open: false });
   const [editClient, setEditClient] = useState(false);
   const [activeFolder, setActiveFolder] = useState<string | null>(null);
+  const [quoteDialog, setQuoteDialog] = useState(false);
+  const [projectAddress, setProjectAddress] = useState("");
 
   const { data: client } = useQuery({
     queryKey: ["client", id],
@@ -213,6 +217,14 @@ function ClientDetail() {
         )}
       </Card>
 
+      {client.status === "quote" && (
+        <div className="flex justify-end">
+          <Button onClick={() => setQuoteDialog(true)}>
+            <FileDown className="ms-2 h-4 w-4" /> הנפק הצעת מחיר
+          </Button>
+        </div>
+      )}
+
       <FinanceSection client={client} />
 
       <Card>
@@ -352,6 +364,43 @@ function ClientDetail() {
       />
 
       <ClientFormDialog open={editClient} onOpenChange={setEditClient} client={client} />
+
+      <Dialog open={quoteDialog} onOpenChange={setQuoteDialog}>
+        <DialogContent dir="rtl" className="text-right sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>הנפקת הצעת מחיר</DialogTitle>
+          </DialogHeader>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              openQuotePdf({ client, projectAddress });
+              setQuoteDialog(false);
+            }}
+            className="space-y-4"
+          >
+            <div className="space-y-2">
+              <Label htmlFor="paddr">כתובת הפרויקט</Label>
+              <Input
+                id="paddr"
+                value={projectAddress}
+                onChange={(e) => setProjectAddress(e.target.value)}
+                placeholder="לדוגמה: רחוב הרצל 10, תל אביב"
+              />
+            </div>
+            <p className="text-xs text-muted-foreground">
+              הסכומים, המטרים והתעריף ימשכו אוטומטית מהמחשבון בכרטיס הלקוח.
+            </p>
+            <DialogFooter>
+              <Button type="button" variant="ghost" onClick={() => setQuoteDialog(false)}>
+                ביטול
+              </Button>
+              <Button type="submit">
+                <FileDown className="ms-2 h-4 w-4" /> הפק PDF
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

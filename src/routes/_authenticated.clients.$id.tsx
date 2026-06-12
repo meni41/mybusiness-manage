@@ -465,48 +465,6 @@ function FinanceSection({ client }: { client: Client }) {
         <CardTitle className="text-base">מעקב כספי ללקוח</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="grid gap-4 sm:grid-cols-3">
-          <div className="space-y-2">
-            <Label htmlFor="total">סכום לתשלום (₪)</Label>
-            <Input
-              id="total"
-              type="number"
-              inputMode="decimal"
-              min={0}
-              value={total}
-              onChange={(e) => setTotal(e.target.value)}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="paid">כמה שולם (₪)</Label>
-            <Input
-              id="paid"
-              type="number"
-              inputMode="decimal"
-              min={0}
-              value={paid}
-              onChange={(e) => setPaid(e.target.value)}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label>יתרת תשלום</Label>
-            <div className="flex h-9 items-center rounded-md border border-input bg-muted/40 px-3 text-sm font-semibold">
-              {formatILS(remaining)}
-            </div>
-          </div>
-        </div>
-        <div className="flex justify-end">
-          <Button
-            size="sm"
-            onClick={() =>
-              save.mutate({ total_amount: totalNum, amount_paid: paidNum })
-            }
-            disabled={save.isPending}
-          >
-            שמירת סכומים
-          </Button>
-        </div>
-
         {client.status === "quote" && (
           <div className="space-y-4 rounded-lg border border-dashed p-4">
             <div>
@@ -576,6 +534,48 @@ function FinanceSection({ client }: { client: Client }) {
             </div>
           </div>
         )}
+
+        <div className="grid gap-4 sm:grid-cols-3">
+          <div className="space-y-2">
+            <Label htmlFor="total">סכום לתשלום (₪)</Label>
+            <Input
+              id="total"
+              type="number"
+              inputMode="decimal"
+              min={0}
+              value={total}
+              onChange={(e) => setTotal(e.target.value)}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="paid">כמה שולם (₪)</Label>
+            <Input
+              id="paid"
+              type="number"
+              inputMode="decimal"
+              min={0}
+              value={paid}
+              onChange={(e) => setPaid(e.target.value)}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>יתרת תשלום</Label>
+            <div className="flex h-9 items-center rounded-md border border-input bg-muted/40 px-3 text-sm font-semibold">
+              {formatILS(remaining)}
+            </div>
+          </div>
+        </div>
+        <div className="flex justify-end">
+          <Button
+            size="sm"
+            onClick={() =>
+              save.mutate({ total_amount: totalNum, amount_paid: paidNum })
+            }
+            disabled={save.isPending}
+          >
+            שמירת סכומים
+          </Button>
+        </div>
 
         <div className="space-y-3">
           <h3 className="text-sm font-semibold">חלוקה לתשלומים</h3>

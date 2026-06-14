@@ -1,5 +1,5 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { LayoutDashboard, Users, CheckSquare, LogOut, Briefcase } from "lucide-react";
+import { LayoutDashboard, Users, CheckSquare, LogOut, Briefcase, Archive, Settings } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -19,6 +19,8 @@ const items = [
   { title: "לוח בקרה", url: "/", icon: LayoutDashboard, exact: true },
   { title: "לקוחות", url: "/clients", icon: Users, exact: false },
   { title: "משימות", url: "/tasks", icon: CheckSquare, exact: false },
+  { title: "ארכיון משימות", url: "/archive", icon: Archive, exact: false },
+  { title: "הגדרות", url: "/settings", icon: Settings, exact: false },
 ];
 
 export function AppSidebar() {

@@ -51,6 +51,10 @@ export function buildQuoteHtml(d: QuoteData) {
     .map((l) => `<li>${l}</li>`)
     .join("");
 
+  const bgStyle = d.letterheadUrl
+    ? `background-image: url('${d.letterheadUrl}'); background-size: cover; background-position: center top; background-repeat: no-repeat;`
+    : "";
+
   return `<!doctype html>
 <html lang="he" dir="rtl">
 <head>
@@ -61,34 +65,41 @@ export function buildQuoteHtml(d: QuoteData) {
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; font-family: 'Heebo', Arial, sans-serif; color: #111; background: #fff; }
-  body { padding: 40px 48px; line-height: 1.6; font-size: 13px; }
-  .letterhead { width: 100%; max-height: 140px; object-fit: contain; margin-bottom: 16px; }
+  html, body { margin: 0; padding: 0; font-family: 'Heebo', Arial, sans-serif; color: #111; }
+  body { padding: 40px 48px; line-height: 1.6; font-size: 13px; min-height: 100vh; background-attachment: fixed; background-size: cover; ${bgStyle} }
+  .content { position: relative; z-index: 1; }
   h1 { font-size: 22px; margin: 0 0 4px; text-align: center; }
   h2 { font-size: 15px; margin: 22px 0 10px; padding-bottom: 4px; border-bottom: 2px solid #111; }
   .sub { text-align: center; color: #555; margin-bottom: 18px; font-size: 12px; }
-  .meta { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; background: #f6f6f6; padding: 12px 16px; border-radius: 6px; margin-bottom: 8px; }
+  .meta { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; background: rgba(246,246,246,0.85); padding: 12px 16px; border-radius: 6px; margin-bottom: 8px; }
   .meta div { font-size: 13px; }
   .meta b { display: block; color: #555; font-weight: 500; font-size: 11px; margin-bottom: 2px; }
   ol { padding-right: 20px; margin: 8px 0; }
   ol li { margin-bottom: 6px; }
   .fin { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 10px 0; }
-  .fin .box { border: 1px solid #ddd; border-radius: 6px; padding: 10px 12px; }
+  .fin .box { border: 1px solid #ddd; border-radius: 6px; padding: 10px 12px; background: rgba(255,255,255,0.85); }
   .fin .label { color: #666; font-size: 11px; }
   .fin .val { font-size: 16px; font-weight: 700; margin-top: 4px; }
-  .pay { border: 1px solid #ddd; border-radius: 6px; overflow: hidden; }
+  .pay { border: 1px solid #ddd; border-radius: 6px; overflow: hidden; background: rgba(255,255,255,0.85); }
   .pay .row { display: flex; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid #eee; }
   .pay .row:last-child { border-bottom: none; }
   .pay .row b { color: #111; }
-  .notes { font-size: 11.5px; color: #333; background: #fafafa; border-right: 3px solid #111; padding: 10px 14px; }
+  .notes { font-size: 11.5px; color: #333; background: rgba(250,250,250,0.85); border-right: 3px solid #111; padding: 10px 14px; }
   .notes ul { padding-right: 18px; margin: 6px 0; }
   .sigs { display: flex; justify-content: space-between; gap: 40px; margin-top: 50px; }
   .sigs .sig { flex: 1; text-align: center; }
   .sigs .line { border-top: 1px solid #111; margin-top: 50px; padding-top: 6px; font-size: 12px; }
-  .toolbar { position: fixed; top: 12px; left: 12px; right: 12px; display: flex; gap: 8px; justify-content: flex-start; }
+  .toolbar { position: fixed; top: 12px; left: 12px; right: 12px; display: flex; gap: 8px; justify-content: flex-start; z-index: 999; }
   .toolbar button { background: #111; color: #fff; border: 0; padding: 8px 14px; border-radius: 6px; font-family: inherit; font-size: 13px; cursor: pointer; }
   .toolbar button.alt { background: #fff; color: #111; border: 1px solid #111; }
-  @media print { .toolbar { display: none; } body { padding: 24px 32px; } }
+  @media print {
+    .toolbar { display: none; }
+    body { padding: 24px 32px; background-attachment: fixed; }
+    @page {
+      size: A4;
+      margin: 0;
+    }
+  }
 </style>
 </head>
 <body>
@@ -96,8 +107,7 @@ export function buildQuoteHtml(d: QuoteData) {
     <button onclick="window.print()">הורד / הדפס PDF</button>
     <button class="alt" onclick="window.close()">סגור</button>
   </div>
-
-  ${d.letterheadUrl ? `<img class="letterhead" src="${d.letterheadUrl}" alt="letterhead" />` : ""}
+  <div class="content">
   <h1>${escapeHtml(d.title)}</h1>
   <div class="sub">${escapeHtml(d.subtitle)}</div>
 
@@ -133,6 +143,7 @@ export function buildQuoteHtml(d: QuoteData) {
     <div class="sig"><div class="line">${escapeHtml(d.signatureLeft)}</div></div>
   </div>
 
+  </div>
   <script>
     window.addEventListener('load', () => { setTimeout(() => window.print(), 600); });
   </script>

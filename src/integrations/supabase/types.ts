@@ -14,6 +14,27 @@ export type Database = {
   }
   public: {
     Tables: {
+      app_settings: {
+        Row: {
+          created_at: string
+          letterhead_url: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          letterhead_url?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          letterhead_url?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       clients: {
         Row: {
           amount_paid: number
@@ -149,6 +170,7 @@ export type Database = {
       }
       tasks: {
         Row: {
+          archived_at: string | null
           client_id: string | null
           created_at: string
           description: string | null
@@ -162,6 +184,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          archived_at?: string | null
           client_id?: string | null
           created_at?: string
           description?: string | null
@@ -175,6 +198,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          archived_at?: string | null
           client_id?: string | null
           created_at?: string
           description?: string | null

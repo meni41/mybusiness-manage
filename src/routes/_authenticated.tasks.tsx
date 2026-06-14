@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 import {
   Dialog,
   DialogContent,
@@ -81,6 +82,7 @@ function TasksPage() {
   const qc = useQueryClient();
   const [dialog, setDialog] = useState(false);
   const [form, setForm] = useState<FormState>(emptyForm);
+  const [toArchive, setToArchive] = useState<Task | null>(null);
 
   const { data: tasks = [] } = useQuery({
     queryKey: ["tasks"],
@@ -88,6 +90,7 @@ function TasksPage() {
       const { data, error } = await supabase
         .from("tasks")
         .select("*")
+        .is("archived_at", null)
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data as Task[];
@@ -154,13 +157,18 @@ function TasksPage() {
 
   const del = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("tasks").delete().eq("id", id);
+      const { error } = await supabase
+        .from("tasks")
+        .update({ archived_at: new Date().toISOString() })
+        .eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("המשימה נמחקה");
+      toast.success("המשימה הועברה לארכיון");
       qc.invalidateQueries({ queryKey: ["tasks"] });
+      qc.invalidateQueries({ queryKey: ["tasks", "archived"] });
       qc.invalidateQueries({ queryKey: ["dashboard"] });
+      setToArchive(null);
     },
   });
 
@@ -274,7 +282,7 @@ function TasksPage() {
                             <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => openEdit(t)}>
                               <Pencil className="h-3.5 w-3.5" />
                             </Button>
-                            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => del.mutate(t.id)}>
+                            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setToArchive(t)}>
                               <Trash2 className="h-3.5 w-3.5 text-destructive" />
                             </Button>
                           </div>
@@ -297,6 +305,13 @@ function TasksPage() {
         clients={clients}
         onSave={() => save.mutate(form)}
         busy={save.isPending}
+      />
+
+      <ConfirmDialog
+        open={!!toArchive}
+        onOpenChange={(v) => !v && setToArchive(null)}
+        onConfirm={() => toArchive && del.mutate(toArchive.id)}
+        description={`"${toArchive?.title ?? ""}" יועבר ל‍ארכיון משימות. ניתן לשחזר משם בכל עת.`}
       />
     </div>
   );

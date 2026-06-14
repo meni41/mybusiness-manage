@@ -1,5 +1,3 @@
-import type { Client } from "@/lib/db-types";
-
 function escapeHtml(s: string) {
   return s
     .replace(/&/g, "&amp;")
@@ -17,26 +15,47 @@ function formatILS(n: number) {
   }).format(Number.isFinite(n) ? n : 0);
 }
 
-export function openQuotePdf({
-  client,
-  projectAddress,
-}: {
-  client: Client;
+export type QuoteData = {
+  clientName: string;
   projectAddress: string;
-}) {
-  const meters = Number(client.quote_meters) || 0;
-  const rate = Number(client.quote_rate) || 80;
-  const total = Number(client.total_amount) || meters * rate;
+  date: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  meters: number;
+  rate: number;
+  total: number;
+  notes: string;
+  signatureLeft: string;
+  signatureRight: string;
+  letterheadUrl?: string | null;
+};
+
+export function buildQuoteHtml(d: QuoteData) {
+  const meters = Number(d.meters) || 0;
+  const rate = Number(d.rate) || 0;
+  const total = Number(d.total) || meters * rate;
   const m1 = total * 0.35;
   const m2 = total * 0.35;
   const m3 = total * 0.30;
-  const today = new Date().toLocaleDateString("he-IL");
 
-  const html = `<!doctype html>
+  const descHtml = escapeHtml(d.description)
+    .split(/\n+/)
+    .filter(Boolean)
+    .map((l) => `<li>${l}</li>`)
+    .join("");
+
+  const notesHtml = escapeHtml(d.notes)
+    .split(/\n+/)
+    .filter(Boolean)
+    .map((l) => `<li>${l}</li>`)
+    .join("");
+
+  return `<!doctype html>
 <html lang="he" dir="rtl">
 <head>
 <meta charset="utf-8" />
-<title>הצעת מחיר - ${escapeHtml(client.name)}</title>
+<title>הצעת מחיר - ${escapeHtml(d.clientName)}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -44,6 +63,7 @@ export function openQuotePdf({
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; font-family: 'Heebo', Arial, sans-serif; color: #111; background: #fff; }
   body { padding: 40px 48px; line-height: 1.6; font-size: 13px; }
+  .letterhead { width: 100%; max-height: 140px; object-fit: contain; margin-bottom: 16px; }
   h1 { font-size: 22px; margin: 0 0 4px; text-align: center; }
   h2 { font-size: 15px; margin: 22px 0 10px; padding-bottom: 4px; border-bottom: 2px solid #111; }
   .sub { text-align: center; color: #555; margin-bottom: 18px; font-size: 12px; }
@@ -77,22 +97,18 @@ export function openQuotePdf({
     <button class="alt" onclick="window.close()">סגור</button>
   </div>
 
-  <h1>הצעת מחיר – הסכם עבודה</h1>
-  <div class="sub">תכנון ועיצוב פנים</div>
+  ${d.letterheadUrl ? `<img class="letterhead" src="${d.letterheadUrl}" alt="letterhead" />` : ""}
+  <h1>${escapeHtml(d.title)}</h1>
+  <div class="sub">${escapeHtml(d.subtitle)}</div>
 
   <div class="meta">
-    <div><b>שם הלקוח</b>${escapeHtml(client.name)}</div>
-    <div><b>תאריך</b>${escapeHtml(today)}</div>
-    <div><b>כתובת הפרויקט</b>${escapeHtml(projectAddress || "—")}</div>
+    <div><b>שם הלקוח</b>${escapeHtml(d.clientName)}</div>
+    <div><b>תאריך</b>${escapeHtml(d.date)}</div>
+    <div><b>כתובת הפרויקט</b>${escapeHtml(d.projectAddress || "—")}</div>
   </div>
 
   <h2>פרוט ההצעה:</h2>
-  <ol>
-    <li>אפיון צרכים – פגישה בשטח לתאום ציפיות, הבנת השטח, הלקוח ופרוגרמת הבנייה.</li>
-    <li>הכנת 3 אופציות לתכנון ובניה של הדירה כולל חלוקה פנימית של הקירות, ריהוט ומידות.</li>
-    <li>בחירה ועיבוד מותאם אישי לאופציה הנבחרת – תוכנית אדריכלות סופית לבניה.</li>
-    <li>הכנת סט תוכניות עבודה מפורט לקבלן (תוכנית מצב קיים, ייצוגית, הריסה, בניה, חשמל, מאור, אינסטלציה).</li>
-  </ol>
+  <ol>${descHtml}</ol>
 
   <div class="fin">
     <div class="box"><div class="label">עלות למ"ר</div><div class="val">${formatILS(rate)}</div></div>
@@ -109,18 +125,12 @@ export function openQuotePdf({
 
   <h2>הערות:</h2>
   <div class="notes">
-    <ul>
-      <li>ההצעה כוללת תכנון בלבד ואינה כוללת אגרות, היתרים, יועצים חיצוניים או עבודות ביצוע.</li>
-      <li>שינויים מהותיים בתכנון לאחר אישור האופציה הנבחרת יתומחרו בנפרד.</li>
-      <li>ההצעה בתוקף ל-30 יום מיום הוצאתה.</li>
-      <li>התשלומים אינם כוללים מע"מ אלא אם צוין אחרת.</li>
-      <li>כל עיכוב בתשלום יגרור עיכוב מקביל בלוחות הזמנים של הפרויקט.</li>
-    </ul>
+    <ul>${notesHtml}</ul>
   </div>
 
   <div class="sigs">
-    <div class="sig"><div class="line">חתימת האדריכלית</div></div>
-    <div class="sig"><div class="line">חתימת הלקוח</div></div>
+    <div class="sig"><div class="line">${escapeHtml(d.signatureRight)}</div></div>
+    <div class="sig"><div class="line">${escapeHtml(d.signatureLeft)}</div></div>
   </div>
 
   <script>
@@ -128,7 +138,10 @@ export function openQuotePdf({
   </script>
 </body>
 </html>`;
+}
 
+export function openQuotePdf(d: QuoteData) {
+  const html = buildQuoteHtml(d);
   const w = window.open("", "_blank");
   if (!w) return;
   w.document.open();

@@ -18,7 +18,10 @@ function Dashboard() {
     queryFn: async () => {
       const [clients, tasks, folders] = await Promise.all([
         supabase.from("clients").select("id,status"),
-        supabase.from("tasks").select("id,title,status,priority,due_date,client_id"),
+        supabase
+          .from("tasks")
+          .select("id,title,status,priority,due_date,client_id")
+          .is("archived_at", null),
         supabase.from("folders").select("id"),
       ]);
       return {

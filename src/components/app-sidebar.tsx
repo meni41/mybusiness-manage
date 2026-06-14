@@ -1,5 +1,5 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { LayoutDashboard, Users, CheckSquare, LogOut, Briefcase, Archive, Settings } from "lucide-react";
+import { LayoutDashboard, Users, CheckSquare, LogOut, Archive, Settings } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -40,12 +40,14 @@ export function AppSidebar() {
     <Sidebar collapsible="icon" side="right">
       <SidebarHeader className="border-b border-sidebar-border">
         <div className="flex items-center gap-2 px-2 py-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-            <Briefcase className="h-5 w-5" />
-          </div>
+          <img
+            src="/logo-square.png"
+            alt="Eizenstein Logo"
+            className="h-10 w-10 rounded-lg object-contain group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:w-8"
+          />
           <div className="flex flex-col group-data-[collapsible=icon]:hidden">
-            <span className="text-sm font-semibold leading-tight">אטלס</span>
-            <span className="text-xs text-sidebar-foreground/70">ניהול עסקי</span>
+            <span className="text-sm font-semibold leading-tight">Eizenstein</span>
+            <span className="text-xs text-sidebar-foreground/70">אדריכלות ועיצוב פנים</span>
           </div>
         </div>
       </SidebarHeader>

@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Upload, Trash2 } from "lucide-react";
+import { Upload, Trash2, Lock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
@@ -22,6 +22,25 @@ function SettingsPage() {
   const qc = useQueryClient();
   const [preview, setPreview] = useState<string | null>(null);
   const [confirmDel, setConfirmDel] = useState(false);
+
+  // Password change state
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const changePassword = useMutation({
+    mutationFn: async () => {
+      if (newPassword.length < 6) throw new Error("הסיסמה חייבת להכיל לפחות 6 תווים");
+      if (newPassword !== confirmPassword) throw new Error("הסיסמאות אינן תואמות");
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("הסיסמה שונתה בהצלחה");
+      setNewPassword("");
+      setConfirmPassword("");
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "שגיאה בשינוי הסיסמה"),
+  });
 
   const { data: settings } = useQuery({
     queryKey: ["app_settings"],
@@ -148,6 +167,47 @@ function SettingsPage() {
               <span className="text-xs text-muted-foreground">מעלה…</span>
             )}
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Password Change Card */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Lock className="h-4 w-4" />
+            שינוי סיסמה
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-1.5">
+            <Label htmlFor="new-password">סיסמה חדשה</Label>
+            <Input
+              id="new-password"
+              type="password"
+              placeholder="לפחות 6 תווים"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="confirm-password">אימות סיסמה חדשה</Label>
+            <Input
+              id="confirm-password"
+              type="password"
+              placeholder="הכנס שוב את הסיסמה"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+          </div>
+          {confirmPassword && newPassword !== confirmPassword && (
+            <p className="text-xs text-destructive">הסיסמאות אינן תואמות</p>
+          )}
+          <Button
+            onClick={() => changePassword.mutate()}
+            disabled={changePassword.isPending || !newPassword || !confirmPassword}
+          >
+            {changePassword.isPending ? "שומר..." : "שמור סיסמה חדשה"}
+          </Button>
         </CardContent>
       </Card>
 

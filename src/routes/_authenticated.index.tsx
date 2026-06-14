@@ -58,9 +58,17 @@ function Dashboard() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-semibold tracking-tight">לוח בקרה</h1>
-        <p className="text-sm text-muted-foreground">מבט מהיר על היום.</p>
+      {/* Logo Banner */}
+      <div className="flex items-center justify-between rounded-xl border border-[#B8960C]/20 bg-gradient-to-l from-[#6B1515]/5 to-[#B8960C]/5 px-6 py-4">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight text-[#6B1515]">לוח בקרה</h1>
+          <p className="text-sm text-muted-foreground">מבט מהיר על היום.</p>
+        </div>
+        <img
+          src="/logo-rect.png"
+          alt="Eizenstein"
+          className="h-16 object-contain opacity-90"
+        />
       </div>
 
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">

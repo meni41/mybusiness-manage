@@ -15,6 +15,7 @@ import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated.
 import { Route as AuthenticatedTasksRouteImport } from './routes/_authenticated.tasks'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated.settings'
 import { Route as AuthenticatedClientsRouteImport } from './routes/_authenticated.clients'
+import { Route as AuthenticatedArchiveRouteImport } from './routes/_authenticated.archive'
 import { Route as AuthenticatedClientsIndexRouteImport } from './routes/_authenticated.clients.index'
 import { Route as AuthenticatedClientsIdRouteImport } from './routes/_authenticated.clients.$id'
 
@@ -47,6 +48,11 @@ const AuthenticatedClientsRoute = AuthenticatedClientsRouteImport.update({
   path: '/clients',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedArchiveRoute = AuthenticatedArchiveRouteImport.update({
+  id: '/archive',
+  path: '/archive',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedClientsIndexRoute =
   AuthenticatedClientsIndexRouteImport.update({
     id: '/',
@@ -62,6 +68,7 @@ const AuthenticatedClientsIdRoute = AuthenticatedClientsIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/auth': typeof AuthRoute
+  '/archive': typeof AuthenticatedArchiveRoute
   '/clients': typeof AuthenticatedClientsRouteWithChildren
   '/settings': typeof AuthenticatedSettingsRoute
   '/tasks': typeof AuthenticatedTasksRoute
@@ -70,6 +77,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
+  '/archive': typeof AuthenticatedArchiveRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/tasks': typeof AuthenticatedTasksRoute
   '/': typeof AuthenticatedIndexRoute
@@ -80,6 +88,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_authenticated/archive': typeof AuthenticatedArchiveRoute
   '/_authenticated/clients': typeof AuthenticatedClientsRouteWithChildren
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/tasks': typeof AuthenticatedTasksRoute
@@ -92,17 +101,26 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/archive'
     | '/clients'
     | '/settings'
     | '/tasks'
     | '/clients/$id'
     | '/clients/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/auth' | '/settings' | '/tasks' | '/' | '/clients/$id' | '/clients'
+  to:
+    | '/auth'
+    | '/archive'
+    | '/settings'
+    | '/tasks'
+    | '/'
+    | '/clients/$id'
+    | '/clients'
   id:
     | '__root__'
     | '/_authenticated'
     | '/auth'
+    | '/_authenticated/archive'
     | '/_authenticated/clients'
     | '/_authenticated/settings'
     | '/_authenticated/tasks'
@@ -160,6 +178,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedClientsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/archive': {
+      id: '/_authenticated/archive'
+      path: '/archive'
+      fullPath: '/archive'
+      preLoaderRoute: typeof AuthenticatedArchiveRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/clients/': {
       id: '/_authenticated/clients/'
       path: '/'
@@ -191,6 +216,7 @@ const AuthenticatedClientsRouteWithChildren =
   AuthenticatedClientsRoute._addFileChildren(AuthenticatedClientsRouteChildren)
 
 interface AuthenticatedRouteChildren {
+  AuthenticatedArchiveRoute: typeof AuthenticatedArchiveRoute
   AuthenticatedClientsRoute: typeof AuthenticatedClientsRouteWithChildren
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedTasksRoute: typeof AuthenticatedTasksRoute
@@ -198,6 +224,7 @@ interface AuthenticatedRouteChildren {
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedArchiveRoute: AuthenticatedArchiveRoute,
   AuthenticatedClientsRoute: AuthenticatedClientsRouteWithChildren,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedTasksRoute: AuthenticatedTasksRoute,

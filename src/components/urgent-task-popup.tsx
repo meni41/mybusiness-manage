@@ -34,6 +34,7 @@ export function UrgentTaskPopup() {
         supabase
           .from("tasks")
           .select("*")
+          .is("archived_at", null)
           .neq("status", "done"),
         supabase.from("clients").select("id,name"),
       ]);

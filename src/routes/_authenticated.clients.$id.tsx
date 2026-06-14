@@ -29,13 +29,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { ConfirmDialog } from "@/components/confirm-dialog";
+import { QuoteEditorDialog } from "@/components/quote-editor-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ClientFormDialog } from "@/components/client-form-dialog";
 import { statusLabel, type Client, type Folder as FolderT, type FolderItem } from "@/lib/db-types";
-import { openQuotePdf } from "@/lib/quote-pdf";
 
 export const Route = createFileRoute("/_authenticated/clients/$id")({
   head: () => ({ meta: [{ title: "לקוח — אטלס" }] }),
@@ -51,7 +52,8 @@ function ClientDetail() {
   const [editClient, setEditClient] = useState(false);
   const [activeFolder, setActiveFolder] = useState<string | null>(null);
   const [quoteDialog, setQuoteDialog] = useState(false);
-  const [projectAddress, setProjectAddress] = useState("");
+  const [folderToDelete, setFolderToDelete] = useState<FolderT | null>(null);
+  const [itemToDelete, setItemToDelete] = useState<FolderItem | null>(null);
 
   const { data: client } = useQuery({
     queryKey: ["client", id],
@@ -279,11 +281,7 @@ function ClientDetail() {
                       <Button
                         size="sm"
                         variant="ghost"
-                        onClick={() => {
-                          if (confirm(`למחוק את התיקייה "${f.name}" וכל הפריטים שבה?`)) {
-                            deleteFolder.mutate(f.id);
-                          }
-                        }}
+                        onClick={() => setFolderToDelete(f)}
                       >
                         <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>
@@ -330,7 +328,7 @@ function ClientDetail() {
                             size="icon"
                             variant="ghost"
                             className="opacity-0 transition group-hover:opacity-100"
-                            onClick={() => deleteItem.mutate(it.id)}
+                            onClick={() => setItemToDelete(it)}
                           >
                             <Trash2 className="h-4 w-4 text-destructive" />
                           </Button>
@@ -365,42 +363,31 @@ function ClientDetail() {
 
       <ClientFormDialog open={editClient} onOpenChange={setEditClient} client={client} />
 
-      <Dialog open={quoteDialog} onOpenChange={setQuoteDialog}>
-        <DialogContent dir="rtl" className="text-right sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>הנפקת הצעת מחיר</DialogTitle>
-          </DialogHeader>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              openQuotePdf({ client, projectAddress });
-              setQuoteDialog(false);
-            }}
-            className="space-y-4"
-          >
-            <div className="space-y-2">
-              <Label htmlFor="paddr">כתובת הפרויקט</Label>
-              <Input
-                id="paddr"
-                value={projectAddress}
-                onChange={(e) => setProjectAddress(e.target.value)}
-                placeholder="לדוגמה: רחוב הרצל 10, תל אביב"
-              />
-            </div>
-            <p className="text-xs text-muted-foreground">
-              הסכומים, המטרים והתעריף ימשכו אוטומטית מהמחשבון בכרטיס הלקוח.
-            </p>
-            <DialogFooter>
-              <Button type="button" variant="ghost" onClick={() => setQuoteDialog(false)}>
-                ביטול
-              </Button>
-              <Button type="submit">
-                <FileDown className="ms-2 h-4 w-4" /> הפק PDF
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
+      <QuoteEditorDialog open={quoteDialog} onOpenChange={setQuoteDialog} client={client} />
+
+      <ConfirmDialog
+        open={!!folderToDelete}
+        onOpenChange={(v) => !v && setFolderToDelete(null)}
+        onConfirm={() => {
+          if (folderToDelete) {
+            deleteFolder.mutate(folderToDelete.id);
+            setFolderToDelete(null);
+          }
+        }}
+        description={`התיקייה "${folderToDelete?.name ?? ""}" וכל הפריטים שבתוכה יימחקו.`}
+      />
+
+      <ConfirmDialog
+        open={!!itemToDelete}
+        onOpenChange={(v) => !v && setItemToDelete(null)}
+        onConfirm={() => {
+          if (itemToDelete) {
+            deleteItem.mutate(itemToDelete.id);
+            setItemToDelete(null);
+          }
+        }}
+        description={`"${itemToDelete?.title ?? ""}" יימחק.`}
+      />
     </div>
   );
 }

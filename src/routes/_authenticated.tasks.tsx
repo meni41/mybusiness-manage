@@ -306,6 +306,13 @@ function TasksPage() {
         onSave={() => save.mutate(form)}
         busy={save.isPending}
       />
+
+      <ConfirmDialog
+        open={!!toArchive}
+        onOpenChange={(v) => !v && setToArchive(null)}
+        onConfirm={() => toArchive && del.mutate(toArchive.id)}
+        description={`"${toArchive?.title ?? ""}" יועבר ל‍ארכיון משימות. ניתן לשחזר משם בכל עת.`}
+      />
     </div>
   );
 }

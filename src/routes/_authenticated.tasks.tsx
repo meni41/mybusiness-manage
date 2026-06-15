@@ -30,6 +30,7 @@ import {
 import {
   TASK_PRIORITIES,
   TASK_STATUSES,
+  TASK_STAGES,
   statusLabel,
   type Client,
   type Task,
@@ -66,6 +67,7 @@ type FormState = {
   priority: (typeof TASK_PRIORITIES)[number];
   status: (typeof TASK_STATUSES)[number];
   client_id: string;
+  stage: string;
 };
 
 const emptyForm: FormState = {
@@ -75,6 +77,7 @@ const emptyForm: FormState = {
   priority: "medium",
   status: "todo",
   client_id: "none",
+  stage: "none",
 };
 
 function TasksPage() {
@@ -83,6 +86,7 @@ function TasksPage() {
   const [dialog, setDialog] = useState(false);
   const [form, setForm] = useState<FormState>(emptyForm);
   const [toArchive, setToArchive] = useState<Task | null>(null);
+  const [stageFilter, setStageFilter] = useState<string>("all");
 
   const { data: tasks = [] } = useQuery({
     queryKey: ["tasks"],
@@ -126,6 +130,7 @@ function TasksPage() {
         priority: f.priority,
         status: f.status,
         client_id: f.client_id === "none" ? null : f.client_id,
+        stage: f.stage === "none" ? null : f.stage,
       };
       if (f.id) {
         const { error } = await supabase.from("tasks").update(payload).eq("id", f.id);
@@ -186,9 +191,19 @@ function TasksPage() {
       priority: t.priority,
       status: t.status,
       client_id: t.client_id ?? "none",
+      stage: (t as Task & { stage: string | null }).stage ?? "none",
     });
     setDialog(true);
   };
+
+  const filteredTasks = useMemo(() => {
+    if (stageFilter === "all") return tasks;
+    if (stageFilter === "none")
+      return tasks.filter((t) => !(t as Task & { stage: string | null }).stage);
+    return tasks.filter(
+      (t) => (t as Task & { stage: string | null }).stage === stageFilter,
+    );
+  }, [tasks, stageFilter]);
 
   return (
     <div className="space-y-6">
@@ -202,9 +217,27 @@ function TasksPage() {
         </Button>
       </div>
 
+      <div className="flex flex-wrap items-center gap-2">
+        <Label className="text-xs text-muted-foreground">סינון לפי שלב:</Label>
+        <Select value={stageFilter} onValueChange={setStageFilter}>
+          <SelectTrigger className="h-8 w-[260px] text-xs">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">כל השלבים</SelectItem>
+            <SelectItem value="none">ללא שלב</SelectItem>
+            {TASK_STAGES.map((s) => (
+              <SelectItem key={s} value={s}>
+                {s}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
       <div className="grid gap-4 md:grid-cols-3">
         {TASK_STATUSES.map((col) => {
-          const colTasks = tasks.filter((t) => t.status === col);
+          const colTasks = filteredTasks.filter((t) => t.status === col);
           return (
             <Card key={col} className={`border-t-4 ${columnTint[col]} p-4`}>
               <div className="mb-3 flex items-center justify-between">
@@ -242,6 +275,11 @@ function TasksPage() {
                           <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
                             {t.description}
                           </p>
+                        )}
+                        {(t as Task & { stage: string | null }).stage && (
+                          <div className="mt-2 inline-block rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary">
+                            {(t as Task & { stage: string | null }).stage}
+                          </div>
                         )}
                         <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground">
                           {t.client_id && clientMap[t.client_id] && (

@@ -12,6 +12,17 @@ export const TASK_STATUSES = ["todo", "in_progress", "done"] as const;
 export const TASK_PRIORITIES = ["low", "medium", "high"] as const;
 export const CLIENT_STATUSES = ["quote", "in_progress", "archived"] as const;
 
+export const TASK_STAGES = [
+  "הכנת אופציות",
+  "הגשת אופציות ובחירת אופציה סופית",
+  "תוכנית העמדה",
+  "תוכנית בנייה",
+  "תכנית הריסה",
+  "תכנית אינסטלציה",
+  "תכנית חשמל",
+  "תכנית תאורה",
+] as const;
+
 export const statusLabel: Record<string, string> = {
   todo: "לביצוע",
   in_progress: "בתהליך",

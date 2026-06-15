@@ -178,6 +178,7 @@ export type Database = {
           folder_id: string | null
           id: string
           priority: Database["public"]["Enums"]["task_priority"]
+          stage: string | null
           status: Database["public"]["Enums"]["task_status"]
           title: string
           updated_at: string
@@ -192,6 +193,7 @@ export type Database = {
           folder_id?: string | null
           id?: string
           priority?: Database["public"]["Enums"]["task_priority"]
+          stage?: string | null
           status?: Database["public"]["Enums"]["task_status"]
           title: string
           updated_at?: string
@@ -206,6 +208,7 @@ export type Database = {
           folder_id?: string | null
           id?: string
           priority?: Database["public"]["Enums"]["task_priority"]
+          stage?: string | null
           status?: Database["public"]["Enums"]["task_status"]
           title?: string
           updated_at?: string

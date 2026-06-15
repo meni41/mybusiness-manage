@@ -472,6 +472,25 @@ function TaskDialog({
                 </SelectContent>
               </Select>
             </div>
+            <div className="col-span-2 space-y-2">
+              <Label>שלב המשימה</Label>
+              <Select
+                value={form.stage}
+                onValueChange={(v) => setForm({ ...form, stage: v })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="בחר שלב" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">ללא שלב</SelectItem>
+                  {TASK_STAGES.map((s) => (
+                    <SelectItem key={s} value={s}>
+                      {s}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
           <DialogFooter>
             <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>
